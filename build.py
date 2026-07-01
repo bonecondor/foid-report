@@ -186,7 +186,6 @@ def page(title: str, body: str, depth: int = 0) -> str:
 <main>
 {body}
 </main>
-<footer>{html.escape(DOMAIN)}</footer>
 </body>
 </html>
 """

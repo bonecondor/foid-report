@@ -85,12 +85,3 @@ code {
   background: #1a1a1a;
   padding: 0.1em 0.35em;
 }
-
-footer {
-  text-align: center;
-  color: var(--dim);
-  font-size: 0.8rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  padding: 2rem 0 3rem;
-}
