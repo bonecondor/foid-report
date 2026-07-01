@@ -1,0 +1,96 @@
+/* foid.report — black page, white text, thicker white headings */
+
+:root {
+  --bg: #000;
+  --ink: #fff;
+  --dim: #999;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+a { color: var(--ink); }
+a:hover { color: var(--dim); }
+
+.masthead {
+  padding: 3rem 1rem 2rem;
+  text-align: center;
+}
+
+.masthead a {
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 12vw, 7.5rem);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+main {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.2;
+  margin: 2.5rem 0 0.25rem;
+}
+
+h2 { font-size: 1.7rem; }
+h3 { font-size: 1.3rem; }
+
+h2 a { text-decoration: none; }
+h2 a:hover { text-decoration: underline; color: var(--ink); }
+
+.post { margin-bottom: 3.5rem; }
+
+.stamp {
+  color: var(--dim);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 1.25rem;
+}
+
+blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--ink);
+  color: var(--dim);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--dim);
+  margin: 2.5rem auto;
+  width: 6rem;
+}
+
+code {
+  font-family: Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: #1a1a1a;
+  padding: 0.1em 0.35em;
+}
+
+footer {
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2rem 0 3rem;
+}
