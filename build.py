@@ -108,7 +108,8 @@ def md_to_html(src: str) -> str:
             flush_para(para)
             items: list[str] = []
             while i < n and re.match(r"^[-*+]\s+", lines[i].strip()):
-                items.append(f"<li>{_inline(re.sub(r'^[-*+]\\s+', '', lines[i].strip()))}</li>")
+                item = re.sub(r"^[-*+]\s+", "", lines[i].strip())
+                items.append(f"<li>{_inline(item)}</li>")
                 i += 1
             out.append("<ul>" + "".join(items) + "</ul>")
             continue
@@ -117,7 +118,8 @@ def md_to_html(src: str) -> str:
             flush_para(para)
             items = []
             while i < n and re.match(r"^\d+\.\s+", lines[i].strip()):
-                items.append(f"<li>{_inline(re.sub(r'^\\d+\\.\\s+', '', lines[i].strip()))}</li>")
+                item = re.sub(r"^\d+\.\s+", "", lines[i].strip())
+                items.append(f"<li>{_inline(item)}</li>")
                 i += 1
             out.append("<ol>" + "".join(items) + "</ol>")
             continue
