@@ -152,21 +152,46 @@ def parse_post(path: Path) -> dict | None:
         src = src[fm.end():]
 
     body = src.strip()
-    title = meta.get("title", "")
-    if not title:
-        first = body.split("\n", 1)[0].strip()
-        if first.startswith("#"):
-            title = first.lstrip("#").strip()
-            body = body.split("\n", 1)[1].strip() if "\n" in body else ""
-    if not title:
-        title = post_date.strftime("%B %-d, %Y").lower()
+    # A leading "# title" line is stripped for cleanliness, but titles are
+    # assigned sequentially at build time (FIRST POST, SECOND POST, ...), so
+    # any title text here is ignored.
+    first = body.split("\n", 1)[0].strip()
+    if first.startswith("#"):
+        body = body.split("\n", 1)[1].strip() if "\n" in body else ""
 
     return {
         "slug": path.stem,
         "date": post_date,
-        "title": title,
+        "time": meta.get("time", ""),
         "html": md_to_html(body),
     }
+
+
+# ---------------------------- ordinal titles ------------------------------- #
+
+_ONES = [
+    "zeroth", "first", "second", "third", "fourth", "fifth", "sixth",
+    "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth",
+    "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth",
+    "eighteenth", "nineteenth",
+]
+_TENS_CARD = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+_TENS_ORD = {
+    20: "twentieth", 30: "thirtieth", 40: "fortieth", 50: "fiftieth",
+    60: "sixtieth", 70: "seventieth", 80: "eightieth", 90: "ninetieth",
+}
+
+
+def ordinal_word(n: int) -> str:
+    """1 -> 'first', 42 -> 'forty-second'. Falls back to '123rd' past 99."""
+    if n < 20:
+        return _ONES[n]
+    if n < 100:
+        if n % 10 == 0:
+            return _TENS_ORD[n]
+        return f"{_TENS_CARD[n // 10]}-{_ONES[n % 10]}"
+    suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
 
 
 # ------------------------------ pages -------------------------------------- #
@@ -194,7 +219,9 @@ def page(title: str, body: str, depth: int = 0) -> str:
 def post_article(post: dict, heading_link: str | None = None) -> str:
     title = html.escape(post["title"])
     heading = f'<a href="{heading_link}">{title}</a>' if heading_link else title
-    stamp = post["date"].strftime("%B %-d, %Y").lower()
+    stamp = post["date"].strftime("%B %-d, %Y")
+    if post.get("time"):
+        stamp += f" · {post['time']}"
     return (
         '<article class="post">\n'
         f"<h2>{heading}</h2>\n"
@@ -208,8 +235,11 @@ def build() -> None:
     posts = sorted(
         filter(None, (parse_post(p) for p in POSTS_DIR.glob("*.md"))),
         key=lambda p: (p["date"], p["slug"]),
-        reverse=True,
     )
+    # Number chronologically: oldest is FIRST POST.
+    for i, post in enumerate(posts, start=1):
+        post["title"] = f"{ordinal_word(i).upper()} POST"
+    posts.reverse()  # newest first for display
 
     if SITE_DIR.exists():
         shutil.rmtree(SITE_DIR)
