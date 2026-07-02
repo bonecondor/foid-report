@@ -211,7 +211,7 @@ def page(title: str, body: str, depth: int = 0) -> str:
 <body>
 <header class="masthead">
 <a class="wordmark" href="{prefix}index.html">{html.escape(SITE_TITLE)}</a>
-<p class="tagline">girl untethered is scary! take me to <a href="https://fringe.report">fringe</a>, i want <a href="https://trysoup.xyz">soup</a></p>
+<p class="tagline">girl untethered is scary! take me to <a href="https://fringe.report">the fringe</a>, i want <a href="https://trysoup.xyz">soup</a></p>
 </header>
 <main>
 {body}
