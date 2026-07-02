@@ -25,7 +25,8 @@ a:hover { color: var(--dim); }
   text-align: center;
 }
 
-.masthead a {
+.masthead .wordmark {
+  display: block;
   font-family: Helvetica, Arial, sans-serif;
   font-weight: 900;
   font-size: clamp(3rem, 12vw, 7.5rem);
@@ -33,6 +34,19 @@ a:hover { color: var(--dim); }
   text-decoration: none;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.tagline {
+  margin: 0.75rem 0 0;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: var(--dim);
+}
+
+.tagline a {
+  color: var(--ink);
+  text-underline-offset: 2px;
 }
 
 main {
