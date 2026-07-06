@@ -68,7 +68,9 @@ def md_to_html(src: str) -> str:
 
     def flush_para(buf: list[str]) -> None:
         if buf:
-            out.append(f"<p>{_inline(' '.join(l.strip() for l in buf))}</p>")
+            # Posts arrive as texted prose: a single newline is a real line
+            # break, not a paragraph-join like standard markdown.
+            out.append(f"<p>{'<br>'.join(_inline(l.strip()) for l in buf)}</p>")
             buf.clear()
 
     para: list[str] = []
