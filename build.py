@@ -218,6 +218,7 @@ def page(title: str, body: str, depth: int = 0) -> str:
 <main>
 {body}
 </main>
+<script data-goatcounter="https://foid.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
 """
