@@ -209,6 +209,7 @@ def page(title: str, body: str, depth: int = 0) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <link rel="stylesheet" href="{prefix}style.css">
+<link rel="alternate" type="application/rss+xml" title="{html.escape(SITE_TITLE)}" href="https://{DOMAIN}/feed.xml">
 </head>
 <body>
 <header class="masthead">
@@ -218,6 +219,7 @@ def page(title: str, body: str, depth: int = 0) -> str:
 <main>
 {body}
 </main>
+<footer class="tagline"><a href="{prefix}feed.xml">rss</a></footer>
 <script data-goatcounter="https://foid.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
@@ -236,6 +238,39 @@ def post_article(post: dict, heading_link: str | None = None) -> str:
         f'<p class="stamp">{stamp}</p>\n'
         f"{post['html']}\n"
         "</article>"
+    )
+
+
+def rss_feed(posts: list[dict]) -> str:
+    """RSS 2.0 feed, newest first, with full post HTML in each item."""
+
+    def rfc822(d: date) -> str:
+        return d.strftime("%a, %d %b %Y 00:00:00 +0000")
+
+    items = []
+    for p in posts:
+        link = f"https://{DOMAIN}/posts/{p['slug']}.html"
+        items.append(
+            "<item>\n"
+            f"<title>{html.escape(p['title'])}</title>\n"
+            f"<link>{link}</link>\n"
+            f'<guid isPermaLink="true">{link}</guid>\n'
+            f"<pubDate>{rfc822(p['date'])}</pubDate>\n"
+            f"<description>{html.escape(p['html'])}</description>\n"
+            "</item>"
+        )
+    last_build = rfc822(posts[0]["date"]) if posts else rfc822(date.today())
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n'
+        "<channel>\n"
+        f"<title>{html.escape(SITE_TITLE)}</title>\n"
+        f"<link>https://{DOMAIN}/</link>\n"
+        f"<description>{html.escape(SITE_TITLE)}</description>\n"
+        f"<lastBuildDate>{last_build}</lastBuildDate>\n"
+        f'<atom:link href="https://{DOMAIN}/feed.xml" rel="self" type="application/rss+xml"/>\n'
+        + "\n".join(items)
+        + "\n</channel>\n</rss>\n"
     )
 
 
@@ -261,6 +296,8 @@ def build() -> None:
     else:
         feed = '<p class="stamp">no reports yet.</p>'
     (SITE_DIR / "index.html").write_text(page(SITE_TITLE, feed), encoding="utf-8")
+
+    (SITE_DIR / "feed.xml").write_text(rss_feed(posts), encoding="utf-8")
 
     for p in posts:
         (SITE_DIR / "posts" / f"{p['slug']}.html").write_text(
