@@ -143,6 +143,11 @@ _FRONTMATTER = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 _DATE_IN_NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
 
 
+# Posts published before this date stay date-only (Tori's call, July 29
+# 2026): automatic times are forward-looking, not a backfill.
+AUTO_TIME_SINCE = date(2026, 7, 29)
+
+
 def publish_time(path: Path) -> str:
     """Publish time of a post: the author time of the first commit that
     touched it, in New York. A not-yet-committed post gets the current
@@ -157,6 +162,8 @@ def publish_time(path: Path) -> str:
         out = []
     if out:
         dt = datetime.fromisoformat(out[-1]).astimezone(TZ)
+        if dt.date() < AUTO_TIME_SINCE:
+            return ""
     else:
         dt = datetime.now(TZ)
     return dt.strftime("%-I:%M %p")
