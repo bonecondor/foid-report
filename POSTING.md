@@ -38,8 +38,12 @@ the site on push. No local build needed. Pages redeploys in ~1–2 minutes.
   Second post same day: `posts/YYYY-MM-DD-two.md` or a time suffix like
   `posts/YYYY-MM-DD-2216.md` — anything that keeps filenames unique and sorted.
 - Frontmatter is entirely optional; a bare paragraph is a valid post
-  (the date becomes the title). Include `time:` when you can — posts are
-  dated by filename only.
+  (the date becomes the title).
+- **foid stamps every post with a publish time automatically** (July 2026):
+  its build derives the time from the post file's first git commit,
+  shown in New York time. Don't add `time:` frontmatter on foid unless
+  you need to override the commit time. On fringe, `time:` is still
+  manual — include it when you can.
 
 foid frontmatter:
 
