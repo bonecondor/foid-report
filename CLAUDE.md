@@ -22,6 +22,9 @@ When the user gives you post text to upload:
 
 Notes:
 - No frontmatter needed; a bare paragraph is a valid post (date becomes the title).
+- Publish times are automatic: build.py stamps each post with the time of
+  its first git commit (New York time). `time:` frontmatter overrides it;
+  don't add one unless the user asks for a specific time.
 - `drafts/` is ignored by the build.
 - The user often asks to link one word to https://intervals.report or https://fringe.report — link exactly the occurrence(s) they specify.
 - Do not create pull requests for posts unless asked; posts go straight to `main`.

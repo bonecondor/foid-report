@@ -22,8 +22,12 @@ Multiple posts in one day? Add a suffix:  posts/2026-07-01-two.md
 import html
 import re
 import shutil
-from datetime import date
+import subprocess
+from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
+TZ = ZoneInfo("America/New_York")
 
 ROOT = Path(__file__).parent
 POSTS_DIR = ROOT / "posts"
@@ -139,6 +143,25 @@ _FRONTMATTER = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 _DATE_IN_NAME = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
 
 
+def publish_time(path: Path) -> str:
+    """Publish time of a post: the author time of the first commit that
+    touched it, in New York. A not-yet-committed post gets the current
+    time, which the post-push rebuild then pins to the real commit time.
+    Requires full git history — the Actions checkout uses fetch-depth: 0."""
+    try:
+        out = subprocess.run(
+            ["git", "log", "--follow", "--format=%aI", "--", str(path)],
+            capture_output=True, text=True, cwd=ROOT,
+        ).stdout.strip().splitlines()
+    except OSError:
+        out = []
+    if out:
+        dt = datetime.fromisoformat(out[-1]).astimezone(TZ)
+    else:
+        dt = datetime.now(TZ)
+    return dt.strftime("%-I:%M %p")
+
+
 def parse_post(path: Path) -> dict | None:
     m = _DATE_IN_NAME.match(path.stem)
     if not m:
@@ -166,7 +189,7 @@ def parse_post(path: Path) -> dict | None:
     return {
         "slug": path.stem,
         "date": post_date,
-        "time": meta.get("time", ""),
+        "time": meta.get("time") or publish_time(path),
         "html": md_to_html(body),
     }
 
